@@ -15,10 +15,16 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
             Exception ex, WebRequest request) {
         return handleExceptionInternal(
                 ex,
-                "Cliente no encontrado",
+                ex.getMessage(),
                 new HttpHeaders(),
                 HttpStatus.NOT_FOUND,
                 request
         );
+    }
+    @ExceptionHandler({RuntimeException.class})
+    public ResponseEntity<Object> handleRuntimeException(RuntimeException exception) {
+        return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(exception.getMessage());
     }
 }

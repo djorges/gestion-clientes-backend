@@ -1,25 +1,24 @@
 package com.example.gestionclientesexample.controller;
 
 import com.example.gestionclientesexample.entity.Cliente;
-import com.example.gestionclientesexample.exception.ClienteNotFoundException;
-import com.example.gestionclientesexample.repository.IClienteRepository;
-import lombok.val;
+import com.example.gestionclientesexample.service.IClienteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("/api/v1/clientes")
 public class ClienteController {
 
     @Autowired
-    private IClienteRepository repository;
+    private IClienteService service;
 
     @GetMapping("/")
     public List<Cliente> listarClientes() {
-        return repository.findAll();
+        return service.listarClientes();
     }
 
     @PostMapping("/")
@@ -27,22 +26,19 @@ public class ClienteController {
     public Cliente guardarCliente(
         @RequestBody Cliente cliente
     ){
-        return repository.save(cliente);
+        return service.guardarCliente(cliente);
     }
 
     @DeleteMapping("/{id}")
     public void borrarCliente(@PathVariable Long id) {
-        repository.findById(id)
-                .orElseThrow(()->new ClienteNotFoundException("Cliente no encontrado"));
-        repository.deleteById(id);
+        service.borrarCliente(id);
     }
 
     @GetMapping("/{id}")
     public Cliente obtenerClientePorId(
         @PathVariable Long id
     ){
-        return repository.findById(id)
-                .orElseThrow(()->new ClienteNotFoundException("Cliente no encontrado"));
+        return service.obtenerClientePorId(id);
     }
 
     @PutMapping("/{id}")
@@ -50,13 +46,6 @@ public class ClienteController {
         @PathVariable Long id,
         @RequestBody Cliente cliente
     ){
-        val entity = repository.findById(id)
-                .orElseThrow(()->new ClienteNotFoundException("Cliente no encontrado"));
-
-        entity.setNombre(cliente.getNombre());
-        entity.setApellido(cliente.getApellido());
-        entity.setEmail(cliente.getEmail());
-
-        return entity;
+        return service.actualizarCliente(id, cliente);
     }
 }
